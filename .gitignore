@@ -1,0 +1,18 @@
+#config files
+.vscode/*
+.vscode
+
+#compiled files
+*.exe
+
+#report and task documents
+*.doc
+*.docx
+
+#other individual tasks
+Passanger_List.data
+client_queue.data
+chess_moves.data
+
+#others
+*.tmp

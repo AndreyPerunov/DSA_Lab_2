@@ -1,0 +1,101 @@
+﻿def
+gcd
+(
+a
+,
+b
+)
+:
+    while
+    b
+    :
+        a
+        ,
+        b
+        =
+        b
+        ,
+        a
+        %
+        b
+    return
+    a
+
+def
+are_coprime
+(
+x
+,
+y
+)
+:
+    if
+    gcd
+    (
+    x
+    ,
+    y
+    )
+    ==
+    1
+    :
+        return
+        True
+    else
+        :
+        return
+        False
+
+num1
+=
+int
+(
+input
+(
+"Enter
+first
+number
+:
+"
+)
+)
+
+num2
+=
+int
+(
+input
+(
+"Enter
+second
+number
+:
+"
+)
+)
+
+if
+are_coprime
+(
+num1
+,
+num2
+)
+:
+    print
+    (
+"They
+are
+coprime
+"
+)
+else
+    :
+    print
+    (
+"They
+are
+not
+coprime
+"
+)
