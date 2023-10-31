@@ -16,6 +16,7 @@ class Stack {
     void push(T element);
     T pop();
     T peek();
+    bool contains(T element);
     void print();
   private:
     int top;
@@ -59,6 +60,16 @@ T Stack<T>::peek() {
 }
 
 template<typename T>
+bool Stack<T>::contains(T element) {
+  for (T el : elements) {
+    if (el == element) {
+      return true;
+    }
+  }
+  return false;
+}
+
+template<typename T>
 void Stack<T>::print() {
   if (top == -1) {
     std::cout << "empty ";
@@ -72,9 +83,10 @@ void Stack<T>::print() {
 
 
 // HASHMAP:
+// (key, value) ==> ("return", "return") ==> "return" ==> 128321083 ==> 2
 // 0 -- ["}"]
 // 1 -- []
-// 2 -- ["a", ";"]
+// 2 -- ["a", ";", "return"]
 // 3 -- ["b"]
 // 4 -- ["if"]
 
