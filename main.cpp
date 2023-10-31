@@ -86,7 +86,7 @@ void Stack<T>::print() {
 template<typename T>
 class HashTable {
   private:
-    int numberOfBuckets = 80; // twice amount of data (lines in programm_text.data)
+    int numberOfBuckets = 5;
     int elementsCount = 0;
     std::vector<Stack<T>> buckets;
   public:
