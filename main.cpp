@@ -2,7 +2,6 @@
 #include <fstream>
 #include <string>
 #include <vector>  
-#include <cmath>
 
 // TODO: Evaluate the speed of the algorithms on different numbers of elements.
 // TODO: +add new element at the end of the collection of the data;
@@ -72,14 +71,6 @@ void Stack<T>::print() {
 }
 
 
-int hashString(std::string str) {
-  int key = 0;
-  for (int i = 0; i < str.length(); i++) {
-    key+= int(str[i]) * std::pow(2, str.length()-i-1);
-  }
-  return key;  
-}
-
 // HASHMAP:
 // 0 -- ["}"]
 // 1 -- []
@@ -90,14 +81,14 @@ int hashString(std::string str) {
 template<typename T>
 class HashTable {
   private:
-    int numberOfBuckets = 200; // twice amount of data (lines in programm_text.data)
+    int numberOfBuckets = 100; // twice amount of data (lines in programm_text.data)
     std::vector<Stack<T>> buckets;
   public:
     HashTable();
-    int hashFunction(int key);
-    void add(int key, T value);
-    void remove(int key); // delete specified element from the collection
-    T get(int key); // search for a value by the given key
+    long long hashFunction(std::string key);
+    void add(std::string key, T value);
+    void remove(std::string key); // delete specified element from the collection
+    T get(std::string key); // search for a value by the given key
     void print(); // display the contents of the dataset
 };
 
@@ -111,34 +102,40 @@ HashTable<T>::HashTable() {
 }
 
 template<typename T>
-int HashTable<T>::hashFunction(int key) {
-  return key % numberOfBuckets;
+long long HashTable<T>::hashFunction(std::string key) {
+  long long hash = 0;
+  for (int i = 0; i < key.length(); i++) {
+    hash+= (hash << 5)-hash + int(key[i]);
+  }
+  hash = abs(hash);
+
+  return hash % numberOfBuckets;
 }
 
 template<typename T>
-void HashTable<T>::add(int key, T value) {
-  int index = hashFunction(key);
+void HashTable<T>::add(std::string key, T value) {
+  long index = hashFunction(key);
   buckets[index].push(value);
   // TODO: check if bucket contains element with the same key
 }
 
 template<typename T>
-void HashTable<T>::remove(int key) {
-  int index = hashFunction(key);
+void HashTable<T>::remove(std::string key) {
+  long index = hashFunction(key);
   if (buckets[index].peek != NULL) {
     std::cout << "[ERR] Bucket " << index << " is empty" << std::endl;
     return;
   }
   if (hashString(buckets[index].peek()) == key){
     buckets[index].pop();
-    return
+    return;
   }
   // TODO: delete specified element from the collection
 }
 
 template<typename T>
-T HashTable<T>::get(int key) {
-  int index = hashFunction(key);
+T HashTable<T>::get(std::string key) {
+  long index = hashFunction(key);
   return buckets[index].peek();
   // TODO: search for a value by the given key
 }
@@ -188,9 +185,8 @@ int main() {
 
   HashTable HT = HashTable<std::string>();
   
-  for (int i = 0; i < programm.size(); i++)
-  {
-    HT.add(hashString(programm[i]), programm[i]);
+  for (std::string line : programm) {
+    HT.add(line, line);
   }
 
   HT.print();
