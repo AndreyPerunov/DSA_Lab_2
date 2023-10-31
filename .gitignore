@@ -8,6 +8,7 @@
 #report and task documents
 *.doc
 *.docx
+*.txt
 
 #other individual tasks
 Passanger_List.data
