@@ -3,11 +3,6 @@
 #include <string>
 #include <vector>  
 
-// TODO: Evaluate the speed of the algorithms on different numbers of elements.
-// TODO: +add new element at the end of the collection of the data;
-// TODO: +add new element at the beginning of the collection of the data;
-// TODO: +add the element after specified element;
-
 // STACK
 template<typename T>
 class Stack {
@@ -38,8 +33,7 @@ void Stack<T>::push(T element) {
 template<typename T>
 T Stack<T>::pop() {
   if (top == -1) {
-    std::cout << "[ERR] Stack is empty" << std::endl;
-    return NULL;
+    return "";
   }
 
   T element = elements[top];
@@ -52,8 +46,7 @@ T Stack<T>::pop() {
 template<typename T>
 T Stack<T>::peek() {
   if (top == -1) {
-    std::cout << "[ERR] Stack is empty" << std::endl;
-    return NULL;
+    return "";
   }
 
   return elements[top];
@@ -72,10 +65,10 @@ bool Stack<T>::contains(T element) {
 template<typename T>
 void Stack<T>::print() {
   if (top == -1) {
-    std::cout << "empty ";
+    // std::cout << "empty ";
     return;
   }
-  std::cout << "Stack: ";
+  // std::cout << "Stack: ";
   for (T element : elements) {
     std::cout << "['" << element << "'] ";
   }
@@ -93,14 +86,16 @@ void Stack<T>::print() {
 template<typename T>
 class HashTable {
   private:
-    int numberOfBuckets = 100; // twice amount of data (lines in programm_text.data)
+    int numberOfBuckets = 80; // twice amount of data (lines in programm_text.data)
+    int elementsCount = 0;
     std::vector<Stack<T>> buckets;
   public:
     HashTable();
-    long long hashFunction(std::string key);
+    long hashFunction(std::string key);
     void add(std::string key, T value);
     void remove(std::string key); // delete specified element from the collection
     T get(std::string key); // search for a value by the given key
+    bool contains(std::string key);
     void print(); // display the contents of the dataset
 };
 
@@ -114,47 +109,90 @@ HashTable<T>::HashTable() {
 }
 
 template<typename T>
-long long HashTable<T>::hashFunction(std::string key) {
-  long long hash = 0;
+long HashTable<T>::hashFunction(std::string key) {
+  long hash = 0;
   for (int i = 0; i < key.length(); i++) {
     hash+= (hash << 5)-hash + int(key[i]);
   }
   hash = abs(hash);
 
-  return hash % numberOfBuckets;
+  return hash;
 }
 
 template<typename T>
 void HashTable<T>::add(std::string key, T value) {
-  long index = hashFunction(key);
+  if (value == "") return;
+  if (contains(key)) return;
+  if(buckets.size() == elementsCount) {
+    // Resizing the hash table
+    std::vector<Stack<T>>newBuckets (numberOfBuckets * 2);
+    for (int i = 0; i < numberOfBuckets; i++) {
+      std::string keyExisting;
+      do {
+        keyExisting = buckets[i].pop();
+        if (keyExisting == "") break;
+        long index = hashFunction(keyExisting) % (numberOfBuckets * 2);
+        newBuckets[index].push(keyExisting);
+      } while (keyExisting != "");
+    }
+    buckets = newBuckets;
+    numberOfBuckets *= 2;
+  }
+  elementsCount++;
+  long index = hashFunction(key) % numberOfBuckets;
   buckets[index].push(value);
-  // TODO: check if bucket contains element with the same key
 }
 
 template<typename T>
 void HashTable<T>::remove(std::string key) {
-  long index = hashFunction(key);
-  if (buckets[index].peek != NULL) {
+  long index = hashFunction(key) % numberOfBuckets;
+  if (buckets[index].peek() == "") {
     std::cout << "[ERR] Bucket " << index << " is empty" << std::endl;
     return;
   }
-  if (hashString(buckets[index].peek()) == key){
-    buckets[index].pop();
-    return;
-  }
-  // TODO: delete specified element from the collection
+  Stack<T> newStack = Stack<T>();
+  std::string element;
+  do {
+    element = buckets[index].pop();
+    if (element == "") {
+      break;
+    }
+    if (element == key) {
+      // skip this element
+      continue;
+    }
+    newStack.push(element);
+  } while (element != "");
+
+  buckets[index] = newStack;
 }
 
 template<typename T>
 T HashTable<T>::get(std::string key) {
-  long index = hashFunction(key);
-  return buckets[index].peek();
-  // TODO: search for a value by the given key
+  long index = hashFunction(key) % numberOfBuckets;
+  Stack stack = buckets[index];
+  std::string element = stack.pop();
+  do {
+    if (element == key) {
+      return element;
+    }
+    element = stack.pop();
+  } while (element != "");
+  return "";
+}
+
+template<typename T>
+bool HashTable<T>::contains(std::string key) {
+  if (get(key) == "") {
+    return false;
+  }
+  return true;
 }
 
 template<typename T>
 void HashTable<T>::print() {
   std::cout << "Hash Table: " << std::endl;
+  std::cout << "Total number of elements: " << elementsCount << std::endl;
   for (int i = 0; i < numberOfBuckets; i++) {
     std::cout << "[" << i << "]: ";
     buckets[i].print();
@@ -181,12 +219,6 @@ void readData(std::string filename, std::vector<std::string>& arr) {
   }
 
   file.close();
-}
-
-void print(std::vector<std::string> vec) {
-  for (std::string str : vec) {
-    std::cout << str << std::endl;
-  }
 }
 
 int main() {
