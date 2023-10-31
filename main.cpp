@@ -1,7 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>  
+#include <vector>
+#include <chrono>  
 
 // STACK
 template<typename T>
@@ -139,7 +140,6 @@ void HashTable<T>::add(std::string key, T value) {
     numberOfBuckets *= 2;
   }
   elementsCount++;
-  std::cout << "Adding element: " << value << std::endl;
   long index = hashFunction(key) % numberOfBuckets;
   buckets[index].push(value);
 }
@@ -164,8 +164,6 @@ void HashTable<T>::remove(std::string key) {
     }
     newStack.push(element);
   } while (element != "");
-
-  std::cout << "Removing element: " << key << std::endl;
 
   buckets[index] = newStack;
 }
@@ -218,7 +216,12 @@ int main() {
 
   while (getline(file, line)) {
     try {
+      std::cout << std::endl << "Add element " << line << std::endl;
+      auto start = std::chrono::high_resolution_clock::now();
       HT.add(line, line);
+      auto end = std::chrono::high_resolution_clock::now();
+      std::chrono::duration<float> duration = end - start;
+      std::cout << "  Time: " << duration.count()*1000 << "ms" << std::endl << std::endl;
     } catch (const std::invalid_argument& e) {
       std::cerr << "Error reading line number." << std::endl;
     }
@@ -227,6 +230,20 @@ int main() {
   file.close();
 
   HT.print();
+
+  std::cout << std::endl << "Remove element coprime" << std::endl;
+  auto start1 = std::chrono::high_resolution_clock::now();
+  HT.remove("coprime");
+  auto end1 = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<float> duration1 = end1 - start1;
+  std::cout << "  Time: " << duration1.count()*1000 << "ms" << std::endl << std::endl;
+
+  std::cout << std::endl << "Getting element num1" << std::endl;
+  auto start2 = std::chrono::high_resolution_clock::now();
+  HT.get("num1");
+  auto end2 = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<float> duration2 = end2 - start2;
+  std::cout << "  Time: " << duration2.count()*1000 << "ms" << std::endl << std::endl;
 
   return 0;
 }
