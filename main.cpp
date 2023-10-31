@@ -200,38 +200,28 @@ void HashTable<T>::print() {
   }
 }
 
-void readData(std::string filename, std::vector<std::string>& arr) {
-  std::ifstream file(filename);
+int main() {
+  HashTable HT = HashTable<std::string>();
+
+  // Read Data
+  std::ifstream file("programm_text.data");
 
   if (!file.is_open()) {
     std::cerr << "Error opening file" << std::endl;
-    return;
+    return 1;
   }
 
   std::string line;
 
   while (getline(file, line)) {
     try {
-      arr.push_back(line);
+      HT.add(line, line);
     } catch (const std::invalid_argument& e) {
       std::cerr << "Error reading line number." << std::endl;
     }
   }
 
   file.close();
-}
-
-int main() {
-  std::vector<std::string> programm;
-  readData("programm_text.data", programm);
-  // first line is ���def for some reason
-  programm[0] = programm[0].substr(3);
-
-  HashTable HT = HashTable<std::string>();
-  
-  for (std::string line : programm) {
-    HT.add(line, line);
-  }
 
   HT.print();
 
