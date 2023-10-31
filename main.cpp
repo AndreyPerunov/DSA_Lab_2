@@ -139,6 +139,7 @@ void HashTable<T>::add(std::string key, T value) {
     numberOfBuckets *= 2;
   }
   elementsCount++;
+  std::cout << "Adding element: " << value << std::endl;
   long index = hashFunction(key) % numberOfBuckets;
   buckets[index].push(value);
 }
@@ -163,6 +164,8 @@ void HashTable<T>::remove(std::string key) {
     }
     newStack.push(element);
   } while (element != "");
+
+  std::cout << "Removing element: " << key << std::endl;
 
   buckets[index] = newStack;
 }
